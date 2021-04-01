@@ -14,9 +14,9 @@ bgColour = (8, 8, 8)
 
 edges = []
 
-openList = []
+mazeList = []
 
-closedList = []
+possibleRoute = []
 
 displayName = ("Random Maze Generation Version 0")
 
@@ -25,6 +25,8 @@ displaySurface = pygame.display.set_mode(windowDimensions)
 pygame.display.set_caption(displayName)
 
 running = True
+
+mazeComplete = False
 
 nodeMatrix = MazeGenAlgorithm.generateMazeBase(windowDimensions, 10, edges,)
 
@@ -37,12 +39,6 @@ def drawNodes(nodeMat):
         for y in x:
 
             y.drawNode(displaySurface)
-
-def randomPrimsAlgorithm():
-
-
-
-    pass
 
 def randEdge():
 
@@ -57,8 +53,25 @@ def randEdge():
     return mazeEdgeNode
 
 mazeStart = randEdge()
+possibleRoute.append(mazeStart)
 
-currentNode = mazeStart
+def randomPrimAlgo(mazeList, possibleRoute,):
+    if len(possibleRoute) > 0:
+        
+        choice = random.choice(possibleRoute)
+        choice.setTraversable(True)
+        possibleRoute.remove(choice)
+
+        for neighbour in choice.getNeighbours():
+            if not neighbour.getVisited():
+                possibleRoute.append(neighbour)
+                neighbour.setVisited(True)
+            else:
+                pass
+
+    else:
+        pass
+
 
 while running:
 
@@ -73,5 +86,7 @@ while running:
     displaySurface.fill(bgColour)
 
     drawNodes(nodeMatrix)
+
+    randomPrimAlgo(mazeList, possibleRoute)
     
     pygame.display.flip()

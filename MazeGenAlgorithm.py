@@ -13,6 +13,8 @@ class node:
 
         self.neighbours = []
 
+        self.parent = None
+
         self.position = position
 
         self.traversable = False
@@ -35,7 +37,6 @@ class node:
 
     def drawNode(self, screen):
 
-
         if self.start:
     
             pygame.draw.rect(screen, (32, 255, 32), self.rectang, 0,)
@@ -44,7 +45,7 @@ class node:
             
             pygame.draw.rect(screen, self.traversableCol, self.rectang, 0,)
 
-        elif not self.traversable and not self.start:
+        elif not self.traversable:
 
             pygame.draw.rect(screen, self.nonTraversableCol, self.rectang, 0,)
 
@@ -53,21 +54,51 @@ class node:
     def setEState(self, state,):
         self.edge = state
 
+
     def setEnd(self, state,):
         self.end = state
 
+
+    def getEState(self,):
+        
+        return self.edge
+
+    def getVisited(self,):
+
+        return self.visited
+
+    def setVisited(self, data,):
+
+        self.visited = data
+
     def setNeighbours(self, listData,):
         self.neighbours = list(listData)
+
 
     def addNeighbours(self, data,):
 
         self.neighbours.append(data)
 
+    def setTraversable(self, data,):
+        self.traversable = data
+
+    def getNeighbours(self,):
+        
+        return self.neighbours
+
+
     def setStart(self, state,):
+
         self.start = state
 
+
     def getStartorFinish(self):
+
         return self.start
+
+    def setParent(self, data):
+        self.parent.append(data)
+
 
 def removeRepeats(data):
     if len(data) >= 1:
@@ -120,9 +151,14 @@ def getNeighbour(nodeMatrix):
 
                 try:
                 
-                    nodeMatrix[x][y].addNeighbours(nodeMatrix[position[0]][position[1]])
+                    nodeMatrix[x][y].addNeighbours(nodeMatrix[abs(position[0])][abs(position[1])])
+
+                    neighboursUnsorted = nodeMatrix[x][y].getNeighbours()
+
+                    neighboursUnsorted = removeRepeats(neighboursUnsorted)
                 
                 except IndexError:
+
                     continue
 
 def generateMazeBase(windowDimensions, nodeWidth, edges,):
@@ -148,7 +184,7 @@ def generateMazeBase(windowDimensions, nodeWidth, edges,):
 
                 edges.append(Node)
 
-            elif xNode + 1 == 100 or yNode + 1 == 70:
+            elif xNode + 1 == navWidth or yNode + 1 == navHeight:
                 Node.setEState(True)
 
                 edges.append(Node)
