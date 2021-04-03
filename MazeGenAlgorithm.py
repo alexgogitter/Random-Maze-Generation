@@ -25,16 +25,47 @@ class node:
 
         self.start = False
 
-        self.rectang = ((self.position[0]*10) + 1, (self.position[1]*10) + 1, (self.width - 2), (self.width - 2))
+        self.rectang = [(self.position[0]*10) + 1, (self.position[1]*10) + 1, (self.width - 2), (self.width - 2)]
 
         self.traversableCol = (255, 255, 255)
 
         self.nonTraversableCol = (64, 64, 64)
 
-    def drawNeighbours(self, screen,):
-        for neighbour in self.neighbours:
-            pygame.draw.rect(screen, (255, 255, 255,), neighbour.rectang, 0,)
+    def joinToParent(self,):
 
+        if self.parent != None:
+
+            parentPosition = self.parent.getPosition()
+
+            currentPosition = self.position
+
+            deltaPosition = (currentPosition[0] - parentPosition[0]), (currentPosition[1] - parentPosition[1])
+            
+            if deltaPosition[0] < 0:
+
+                self.rectang[2] += 2
+
+            if deltaPosition[0] > 0:
+
+                self.rectang[0] -= 2
+
+                self.rectang[2] += 2
+
+            if deltaPosition[1] > 0:
+
+                self.rectang[1] -= 2
+
+                self.rectang[3] += 2
+
+            if deltaPosition[1] < 0:
+
+                self.rectang[3] += 3
+
+
+
+
+
+        
     def drawNode(self, screen):
 
         if self.start:
@@ -49,7 +80,11 @@ class node:
 
             pygame.draw.rect(screen, self.nonTraversableCol, self.rectang, 0,)
 
+        if self.edge:
+            pygame.draw.rect(screen, (0, 0, 0), self.rectang, 0,)
     
+    def getPosition(self,):
+        return(self.position)
 
     def setEState(self, state,):
         self.edge = state
@@ -91,13 +126,20 @@ class node:
 
         self.start = state
 
+    def getStart(self,):
+
+        return self.start
 
     def getStartorFinish(self):
 
         return self.start
 
     def setParent(self, data):
-        self.parent.append(data)
+        self.parent = (data)
+
+    def getParent(self, ):
+        
+        return self.parent
 
 
 def removeRepeats(data):
@@ -106,9 +148,13 @@ def removeRepeats(data):
         return data
 
     else:
+
         for i in data:
+
             for j in data:
+
                 if data[j] == data[i]:
+
                     data.remove(data[j])
 
     return data 
@@ -147,8 +193,6 @@ def getNeighbour(nodeMatrix):
 
             for position in possibleNeighbours:
 
-                ##print((position, y, x, xIncr, yIncr))
-
                 try:
                 
                     nodeMatrix[x][y].addNeighbours(nodeMatrix[abs(position[0])][abs(position[1])])
@@ -176,15 +220,18 @@ def generateMazeBase(windowDimensions, nodeWidth, edges,):
 
             position = [xNode, yNode]
 
+            print((position, (xNode, yNode), (navWidth, navHeight),(xNode == navWidth),(yNode == navHeight)))
+
             Node = node(position, nodeWidth)
 
-            if xNode == 0 or yNode == 0:
+            if position[0] == 0 or position[1] == 0: 
 
                 Node.setEState(True)
 
                 edges.append(Node)
 
-            elif xNode + 1 == navWidth or yNode + 1 == navHeight:
+            if xNode+1 == navWidth or yNode+1 == navHeight:
+
                 Node.setEState(True)
 
                 edges.append(Node)

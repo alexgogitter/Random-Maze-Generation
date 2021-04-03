@@ -6,9 +6,11 @@ import MazeGenAlgorithm
 
 import random
 
+import secrets
+
 pygame.init()
 
-windowDimensions = (500, 500)
+windowDimensions = (500, 400)
 
 bgColour = (8, 8, 8)
 
@@ -42,7 +44,7 @@ def drawNodes(nodeMat):
 
 def randEdge():
 
-    mazeEdgeNode = random.choice(edges)
+    mazeEdgeNode = secrets.choice(edges)
 
     mazeEdgeNode.setStart(True)
 
@@ -53,25 +55,30 @@ def randEdge():
     return mazeEdgeNode
 
 mazeStart = randEdge()
+
 possibleRoute.append(mazeStart)
 
-def randomPrimAlgo(mazeList, possibleRoute,):
+def randomPrimAlgo(possibleRoute,):
+    
     if len(possibleRoute) > 0:
-        
-        choice = random.choice(possibleRoute)
-        choice.setTraversable(True)
-        possibleRoute.remove(choice)
 
-        for neighbour in choice.getNeighbours():
-            if not neighbour.getVisited():
-                possibleRoute.append(neighbour)
+        current = random.choice(possibleRoute)
+
+        current.setTraversable(True)
+
+        possibleRoute.remove(current)
+
+        current.joinToParent()
+
+        for neighbour in current.getNeighbours():
+                
+            if not neighbour.getVisited() and not neighbour.getEState():
+
                 neighbour.setVisited(True)
-            else:
-                pass
 
-    else:
-        pass
+                neighbour.setParent(current)
 
+                possibleRoute.append(neighbour)
 
 while running:
 
@@ -87,6 +94,8 @@ while running:
 
     drawNodes(nodeMatrix)
 
-    randomPrimAlgo(mazeList, possibleRoute)
+    randomPrimAlgo(possibleRoute)
+
+    mazeStart.drawNode(displaySurface)
     
     pygame.display.flip()
